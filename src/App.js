@@ -22,8 +22,7 @@ class App extends React.Component{
         this.state = {
             message:"type your name."
         };
-        this.doChange = this.doChange.bind(this);
-        this.doSubmit = this.doSubmit.bind(this);
+        this.doCheck = this.doCheck.bind(this);
     }
 
     doChange(e){
@@ -37,49 +36,40 @@ class App extends React.Component{
         e.preventDefault();
     }
 
+    doCheck(e){
+        alert(e.target.value + "は長すぎます。(最大10文字)");
+    }
+
     render() {
         return <div>
             <h1>React</h1>
             <h2>{this.state.message}</h2>
-            <form onSubmit={this.doSubmit}>
-                <label>
-                    <span style={this.inputStyle}></span>Message:
-                    <input type="text" style={this.inputStyle}
-                        onChange={this.doChange}
-                        required pattern="[A-Za-z ?.,]+"
-                           minLength="1" maxLength="10"
-                    />
-                </label>
-                <input type="submit" style={this.inputStyle} value="Click"/>
-            </form>
+            <Message maxlength="10" onCheck={this.doCheck} />
         </div>
     }
 }
 
 class Message extends React.Component {
-    li = {
+    inputStyle = {
         fontSize:"20pt",
-        color:"#900",
-        margin:"20px 0px",
         padding:"5px",
     };
 
-    render() {
-        let content = this.props.children;
-        let arr = content.split('。');
-        let arr2 = [];
-        for (let i = 0; i < arr.length; i++){
-            if(arr[i].trim() != ''){
-                arr2.push(arr[i]);
-            }
+    constructor(props){
+        super(props);
+        this.doChange = this.doChange.bind(this);
+    };
+
+    doChange(e){
+        if(e.target.value.length > this.props.maxlength){
+            console.log(this.props.onCheck);
+            this.props.onCheck(e);
+            e.target.value = e.target.value.substr(0,this.props.maxlength);
         }
-        let list = arr2.map((value,key) =>
-            <li style={this.li} key={key}>{value}.</li>
-        );
-        return <div>
-            <h2>{this.props.title}</h2>
-            <ol>{list}</ol>
-        </div>
+    }
+
+    render() {
+        return <input type="text" style={this.inputStyle} onChange={this.doChange}/>
     }
 }
 
